@@ -5,22 +5,54 @@
  */
 package edu.eci.arsw.blueprints.controllers;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
+import edu.eci.arsw.blueprints.services.BlueprintsServices;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 /**
- *
  * @author hcadavid
  */
+@RestController
+@RequestMapping(value = "/blueprints")
+@AllArgsConstructor
 public class BlueprintAPIController {
-    
-    
-    
-    
-    
-}
+  private final BlueprintsServices blueprintsServices;
 
+  @GetMapping
+  public ResponseEntity<?> getBlueprints() {
+    try {
+      return new ResponseEntity<>(blueprintsServices.getAllBlueprints(), HttpStatus.ACCEPTED);
+    } catch (Exception e) {
+      Logger.getLogger(BlueprintAPIController.class.getName()).log(Level.SEVERE, null, e);
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+  }
+
+  @GetMapping("/{author}")
+  public ResponseEntity<?> getBlueprintsByAuthor(@PathVariable String author) {
+    try {
+      return new ResponseEntity<>(
+          blueprintsServices.getBlueprintsByAuthor(author), HttpStatus.ACCEPTED);
+    } catch (BlueprintNotFoundException e) {
+      Logger.getLogger(BlueprintAPIController.class.getName()).log(Level.SEVERE, null, e);
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+  }
+
+  @GetMapping("/{author}/{bpname}")
+  public ResponseEntity<?> getBlueprintsByAuthorAndBPName(
+      @PathVariable String author, @PathVariable String bpname) {
+    try {
+      return new ResponseEntity<>(
+          blueprintsServices.getBlueprint(author, bpname), HttpStatus.ACCEPTED);
+    } catch (BlueprintNotFoundException e) {
+      Logger.getLogger(BlueprintAPIController.class.getName()).log(Level.SEVERE, null, e);
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+  }
+}
