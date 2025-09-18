@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class Blueprint {
 
   private String author = null;
@@ -27,24 +31,8 @@ public class Blueprint {
 
   public Blueprint() {}
 
-  public String getName() {
-    return name;
-  }
-
-  public String getAuthor() {
-    return author;
-  }
-
-  public List<Point> getPoints() {
-    return points;
-  }
-
   public void addPoint(Point p) {
     this.points.add(p);
-  }
-
-  public void setPoints(List<Point> points) {
-    this.points = points;
   }
 
   @Override

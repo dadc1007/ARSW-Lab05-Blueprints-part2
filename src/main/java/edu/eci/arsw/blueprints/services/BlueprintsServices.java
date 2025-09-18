@@ -6,9 +6,11 @@
 package edu.eci.arsw.blueprints.services;
 
 import edu.eci.arsw.blueprints.model.Blueprint;
+import edu.eci.arsw.blueprints.model.Point;
 import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
 import edu.eci.arsw.blueprints.persistence.BlueprintPersistenceException;
 import edu.eci.arsw.blueprints.persistence.BlueprintsPersistence;
+import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,5 +60,10 @@ public class BlueprintsServices {
    */
   public Set<Blueprint> getBlueprintsByAuthor(String author) throws BlueprintNotFoundException {
     return bpp.getBlueprintsByAuthor(author);
+  }
+
+  public void updateBlueprint(String author, String name, List<Point> points)
+      throws BlueprintNotFoundException {
+    bpp.updateBlueprint(author, name, points);
   }
 }
