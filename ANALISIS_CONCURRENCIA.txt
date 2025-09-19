@@ -1,0 +1,51 @@
+Inicio del analisis
+1. Resumen de la situación original
+
+La implementación original usaba un HashMap no concurrente para almacenar blueprints
+y operaciones como "comprobar existencia e insertar", de la misma manera "obtener y modificar" no
+eran atómicas. Además, los objetos Blueprint y sus arrays Point[] eran almacenados
+y devueltos sin copias defensivas, exponiéndolos a modificaciones concurrentes.
+
+2. Condiciones de carrera identificadas
+
+- Save: containsKey(...) seguido de put(...) implica que dos hilos pueden insertar el mismo
+  plano al mismo tiempo y pasar por alto la verificación de existencia.
+- Update: getBlueprint(...) seguido de setPoints(...) implica que la lectura y la mutación
+  no son atómicas; otro hilo puede eliminar o modificar el blueprint entre ambas.
+- Lecturas/iteraciones: iterar sobre un HashMap mientras otro hilo modifica la
+  estructura puede producir comportamientos indefinidos.
+- Objetos mutables: devolver la referencia directa al Blueprint almacenado permite
+  que un cliente externo modifique internamente los datos compartidos.
+
+3. Regiones críticas
+
+- Acceso a la colección de blueprints (lectura/escritura).
+- Secuencia "comprobar e insertar".
+- Secuencia "obtener y modificar" para actualizar puntos.
+- Manipulación de las estructuras internas (arrays/lists) de Blueprint.
+
+4. Estrategia de solución aplicada
+
+- Cambiar la colección a ConcurrentHashMap (thread-safe y con alto rendimiento).
+- Usar operaciones atómicas del map:
+  - saveBlueprint se implemento putIfAbsent(...) y lanzar excepción si ya existía.
+  - updateBlueprint se implemento replace(...) para tener una actualización atómica (CAS).
+    en caso de que otro hilo este intentando modificar los puntos al mismo tiempo manda una excepción
+- Copias defensivas: almacenar y devolver copias de Blueprint/Point[] para evitar
+  aliasing y modificaciones concurrentes sobre los mismos objetos.
+- No se usó sincronización global (bloque synchronized) para no degradar el
+  desempeño. Se usaron métodos atómicos del concurrent map (putIfAbsent,
+  computeIfPresent).
+
+5. Resultado y justificación
+
+- Las condiciones de carrera detectadas se corrigen porque las operaciones que
+  antes eran "comprobar + actuar" ahora se realizan con primitivas atómicas.
+- Las lecturas son consistentes y seguras, y devolver copias evita corrupción por
+  mutaciones externas.
+- El uso de ConcurrentHashMap permite mantener un rendimiento alto bajo carga
+  concurrente sin un bloqueo global.
+
+
+
+
