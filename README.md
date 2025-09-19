@@ -123,3 +123,7 @@ Posteriormente, por medio de **postman** verificamos que se haya creado de maner
 <p align="center">
   <img src="img/media/postman2.png" alt="Comando curl de Unix" width="400"/>
 </p>
+
+## 📂 Parte III
+La explicación se encuentra en el siguiente archivo 
+[ANALISIS_CONCURRENCIA.txt](ANALISIS_CONCURRENCIA.txt)
